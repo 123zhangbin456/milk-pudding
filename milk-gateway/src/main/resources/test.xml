@@ -1,0 +1,182 @@
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--&lt;!&ndash; status="OFF"，可以去掉，它的含义为是否记录log4j2本身的event信息，默认是OFF &ndash;&gt;-->
+<!--<configuration status="off" monitorInterval="60">-->
+
+<!--    <properties>-->
+<!--        <Property name="logFilePath">${spring:logging.file.path}</Property>-->
+<!--        <Property name="logFileName">${spring:spring.application.name}</Property>-->
+<!--    </properties>-->
+
+
+
+<!--    <appenders>-->
+<!--        &lt;!&ndash; 开发环境用 &ndash;&gt;-->
+<!--        <Console name="debug_console" target="SYSTEM_OUT">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n"/>-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="DEBUG"/>-->
+<!--                <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>-->
+<!--            </Filters>-->
+<!--        </Console>-->
+<!--        <Console name="console" target="SYSTEM_OUT">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n"/>-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="info"/>-->
+<!--            </Filters>-->
+<!--        </Console>-->
+
+<!--        &lt;!&ndash; 输出日志到文件 每天一个文件（ERROR-FATAL级别） &ndash;&gt;-->
+<!--        <RollingRandomAccessFile name="AppErrorDailyRollingFile" fileName="${logFilePath}/${logFileName}/AppError.log" append="true" bufferedIO="false" bufferSize="256"-->
+<!--                                 filePattern="${logFilePath}/AppError.log.%d{yyyy-MM-dd}.log">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n" />-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="ERROR"/>-->
+<!--            </Filters>-->
+<!--            <Policies>-->
+<!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+<!--            </Policies>-->
+<!--        </RollingRandomAccessFile>-->
+
+<!--        &lt;!&ndash; 输出日志到文件 每天一个文件（WARN级别） &ndash;&gt;-->
+<!--        <RollingRandomAccessFile name="AppWarnDailyRollingFile" fileName="${logFilePath}/${logFileName}/AppWarn.log" append="true" bufferedIO="true" bufferSize="10240" immediateFlush="false"-->
+<!--                                 filePattern="${logFilePath}/AppWarn.log.%d{yyyy-MM-dd}.log">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n" />-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="WARN"/>-->
+<!--                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>-->
+<!--            </Filters>-->
+<!--            <Policies>-->
+<!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+<!--            </Policies>-->
+<!--        </RollingRandomAccessFile>-->
+
+<!--        &lt;!&ndash; 输出日志到文件 每天一个文件（INFO级别） &ndash;&gt;-->
+<!--        <RollingRandomAccessFile name="AppInfoDailyRollingFile" fileName="${logFilePath}/${logFileName}/AppAccess.log" append="true" bufferedIO="true" bufferSize="409600" immediateFlush="false"-->
+<!--                                 filePattern="${logFilePath}/AppAccess.log.%d{yyyy-MM-dd}.log">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n" />-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="INFO"/>-->
+<!--                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>-->
+<!--            </Filters>-->
+<!--            <Policies>-->
+<!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+<!--            </Policies>-->
+<!--        </RollingRandomAccessFile>-->
+
+<!--        &lt;!&ndash; 输出日志到文件 每天一个文件（INFO级别） &ndash;&gt;-->
+<!--        <RollingRandomAccessFile name="DBAccessDailyRollingFile" fileName="${logFilePath}/${logFileName}/DBAccess.log" append="true" bufferedIO="true" bufferSize="409600" immediateFlush="false"-->
+<!--                                 filePattern="${logFilePath}/DBAccess.log.%d{yyyy-MM-dd}.log">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n" />-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="INFO"/>-->
+<!--                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>-->
+<!--            </Filters>-->
+<!--            <Policies>-->
+<!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+<!--            </Policies>-->
+<!--        </RollingRandomAccessFile>-->
+
+<!--        &lt;!&ndash; 输出日志到文件 每天一个文件（ERROR级别） &ndash;&gt;-->
+<!--        <RollingRandomAccessFile name="DBErrorDailyRollingFile" fileName="${logFilePath}/${logFileName}/DBError.log" append="true" bufferedIO="false" bufferSize="256"-->
+<!--                                 filePattern="${logFilePath}/DBError.log.%d{yyyy-MM-dd}.log">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n" />-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="WARN"/>-->
+<!--            </Filters>-->
+<!--            <Policies>-->
+<!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+<!--            </Policies>-->
+<!--        </RollingRandomAccessFile>-->
+
+<!--        &lt;!&ndash; 输出日志到文件 每天一个文件（ERROR级别） &ndash;&gt;-->
+<!--        <RollingRandomAccessFile name="SysErrorDailyRollingFile" fileName="${logFilePath}/${logFileName}/SysError.log" append="true" bufferedIO="false"-->
+<!--                                 filePattern="${logFilePath}/SysError.log.%d{yyyy-MM-dd}.log">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n" />-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="WARN"/>-->
+<!--            </Filters>-->
+<!--            <Policies>-->
+<!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+<!--            </Policies>-->
+<!--        </RollingRandomAccessFile>-->
+
+<!--        &lt;!&ndash; 启动日志 &ndash;&gt;-->
+<!--        <RollingRandomAccessFile name="BootLog" fileName="${logFilePath}/${logFileName}/Boot.log" append="false" bufferedIO="false"-->
+<!--                                 filePattern="${logFilePath}/Boot.log.%d{yyyy-MM-dd}.log">-->
+<!--            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [%t] {%c}-%m%n" />-->
+<!--            <Filters>-->
+<!--                <ThresholdFilter level="INFO"/>-->
+<!--            </Filters>-->
+<!--            <Policies>-->
+<!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+<!--            </Policies>-->
+<!--        </RollingRandomAccessFile>-->
+
+<!--        &lt;!&ndash;   <Kafka name="SyncKafka" topic="logs" syncSend="false">-->
+<!--               <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [riiot] [${jar.name}] [%X{ip}] [dev] [%t] {%c}-%m"/>-->
+<!--               <Property name="bootstrap.servers">192.168.1.49:9092</Property>-->
+<!--               <Property name="acks">0</Property>-->
+<!--               <Property name="compression.type">gzip</Property>-->
+<!--               <Property name="max.block.ms">10000</Property>-->
+<!--               <Filters>-->
+<!--                   <ThresholdFilter level="INFO"/>-->
+<!--               </Filters>-->
+<!--           </Kafka>-->
+<!--           <!- 异步发送kafka &ndash;&gt;-->
+<!--&lt;!&ndash;           <Async name="Kafka" bufferSize="512" blocking="false">&ndash;&gt;-->
+<!--&lt;!&ndash;               <AppenderRef ref="SyncKafka"/>&ndash;&gt;-->
+<!--&lt;!&ndash;           </Async>&ndash;&gt;-->
+
+<!--&lt;!&ndash;           <Kafka name="KafkaErrLog" topic="errLogTopic" syncSend="false">&ndash;&gt;-->
+<!--&lt;!&ndash;             <a style="color:transparent">本文来源gao($daima.com搞@代@#码$网</a>  <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS} %-5p] [%traceId] [riiot] [${jar.name}] [%X{ip}] [dev] [%t] {%c}-%m"/>&ndash;&gt;-->
+<!--&lt;!&ndash;               <Property name="bootstrap.servers">192.168.1.49:9092</Property>&ndash;&gt;-->
+<!--&lt;!&ndash;               <Property name="acks">0</Property>&ndash;&gt;-->
+<!--&lt;!&ndash;               <Property name="compression.type">gzip</Property>&ndash;&gt;-->
+<!--&lt;!&ndash;               <Filters>&ndash;&gt;-->
+<!--&lt;!&ndash;                   <ThresholdFilter level="ERROR"/>&ndash;&gt;-->
+<!--&lt;!&ndash;               </Filters>&ndash;&gt;-->
+<!--&lt;!&ndash;           </Kafka>&ndash;&gt;-->
+<!--&lt;!&ndash;           &lt;!&ndash; 异步发送kafka &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;           <Async name="AsyncKafkaErrLog" bufferSize="512" blocking="false">&ndash;&gt;-->
+<!--&lt;!&ndash;               <AppenderRef ref="KafkaErrLog"/>&ndash;&gt;-->
+<!--&lt;!&ndash;           </Async>&ndash;&gt;-->
+<!--    </appenders>-->
+
+<!--    <loggers>-->
+<!--        &lt;!&ndash; 只把包名是com.cmsr的日志输出到文件 &ndash;&gt;-->
+<!--        <logger name="com.cmsr" additivity="false" level="debug">-->
+<!--            <appender-ref ref="AppErrorDailyRollingFile" />-->
+<!--            <appender-ref ref="AppWarnDailyRollingFile" />-->
+<!--            <appender-ref ref="AppInfoDailyRollingFile" />-->
+<!--            <appender-ref ref="console" />-->
+
+<!--            <appender-ref ref="debug_console" />-->
+<!--        </logger>-->
+
+<!--        &lt;!&ndash; 只把包名是com.cmsr.sicp.common.mybatis(DB正常执行，异常分别写到不同的log文件)的日志输出到文件 &ndash;&gt;-->
+<!--        <logger name="com.cmsr.sicp.common.mybatis" additivity="false" level="debug">-->
+<!--            <appender-ref ref="DBAccessDailyRollingFile" />-->
+<!--            <appender-ref ref="DBErrorDailyRollingFile" />-->
+<!--            <appender-ref ref="console" />-->
+
+<!--        </logger>-->
+
+<!--        &lt;!&ndash; 过滤springframework输出，提高启动速度 (生产环境中需要整体删除)&ndash;&gt;-->
+<!--        <logger name="org.springframework" additivity="false" level="warn">-->
+<!--            <appender-ref ref="console" />-->
+<!--        </logger>-->
+
+<!--        &lt;!&ndash; 启动日志单独输出 &ndash;&gt;-->
+<!--        <logger name="com.cmsr.Launcher" additivity="false" level="info">-->
+<!--            <appender-ref ref="BootLog" />-->
+<!--            <appender-ref ref="console" />-->
+<!--        </logger>-->
+
+<!--        &lt;!&ndash; 定义全局。其他包的日志只输出到控制台，不输出到日志文件 &ndash;&gt;-->
+<!--        <root level="error">-->
+<!--            <appender-ref ref="SysErrorDailyRollingFile" />-->
+<!--            <appender-ref ref="console" />-->
+
+<!--        </root>-->
+<!--    </loggers>-->
+<!--</configuration>-->

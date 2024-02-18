@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: milk-util
+  profiles:
+      active: dev
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        namespace: 16179848-69fb-499d-87ed-39806a31b466
+        file-extension: yaml
+        group: DEFAULT_GROUP
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: 16179848-69fb-499d-87ed-39806a31b466
+

@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  关于日志level共有8个级别，按照从低到高为：All < Trace < Debug < Info < Warn < Error < Fatal < OFF
+  Configuration配置节是log4j2.xml文件的根节点。该配置节有两个常用属性：status和monitorinterval。其中，
+  status：用来打印到控制台的内部 Log4j 日志事件的级别，设置该属性是查找 Log4j 故障的第一手工具。用来看到Log4j2启动和加载配置文件时的打印信息
+  monitorinterval：用于指定检查配置文件是否有更新的间隔秒数，单位是s，默认值是5s。另外，Configuration配置节有两个子节点：Appenders和Loggers。
+-->
+<configuration status="TRACE" monitorInterval="60">
+
+    <!--
+      属性（可选），用来定义常量，之后在其他配置项中通过${变量名}引用。
+      注意：linux与 windows 注意/ 与 \ 的区别，linux改为/
+      %d{yyyy.MM.dd HH:mm:ss.SSS}   表示输出到毫秒的时间
+      %t      输出当前线程名称
+      %level    日志级别
+      %-5level  输出日志级别，-5表示左对齐并且固定输出5个字符，如果不足在右边补0
+        %M、%method  输出所在方法名
+        %msg    日志文本
+        %n      换行
+        %x      输出和当前线程相关联的NDC(嵌套诊断环境)，尤其用到像java servlets这样的多客户多线程的应用中
+      %thread   线程名字
+      %l      位置信息，等同于%C.%M(%F:%L)
+      %L      输出行号
+      %C、%class 完整类名
+      %F、%file  文件名
+      %c{1.}    logger名字，比如LoggerName=org.apache.commons.Foo，Result=o.a.c.Foo
+    -->
+    <Properties>
+        <!-- 变量定义 -->
+        <property name="applicationName" value="${spring:spring.application.name}" />
+        <Property name="logFilePath" value="${spring:logging.file.path}" />
+        <Property name="logFileName" value="${applicationName}" />
+        <Property name="backupPath">${logFilePath}/%d{yyyy-MM-dd}</Property>
+        <!--当前精确的分钟,可根据情况自行配置-->
+        <Property name="backupHZ">%d{yyyy-MM-dd}</Property>
+<!--        <Property name="backupHZ">%d{yyyy-MM-dd-HH-mm}</Property>-->
+        <!--日志文件中的日志打印格式-->
+        <Property name="logFormat">%d{yyyy.MM.dd HH:mm:ss.SSS} [%t]%-5level %class{36}  %M %L - %msg %xEx %n</Property>
+        <!--		<Property name="logFormatmat">[%d{yyyy-MM-dd HH:mm:ss.SSS}] %p %t %c[%L] - %m %n</Property>-->
+        <!-- 单个日志文件最大大小，单位可以是KB, MB or GB -->
+        <Property name="max_single_file_size">1MB</Property>
+
+    </Properties>
+
+    <!--输出源，用于定义日志输出的地方，常见的有三种子节点:Console、RollingFile、File、控制台ConsoleAppender、滚动文件FileAppender、RollingRandomAccessFile-->
+    <Appenders>
+        <!-- Console Appender常用于将日志输出到System.out，一般用在开发环境 -->
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <!-- 只接受程序中DEBUG级别的日志进行处理-->
+            <ThresholdFilter level="DEBUG" onMatch="ACCEPT" onMismatch="DENY"/>
+
+            <!-- 在大多数情况下，Appender将格式化LogEvent的责任委托给Layout -->
+            <!--			<PatternLayout pattern="${logFormat}"/>-->
+
+            <!--disableAnsi="false" 如果不设置为false，在windows系统下，console日志颜色的配置不会生效-->
+            <PatternLayout disableAnsi="false">
+                <!--%style{%d}{Underline,black},设置时间格式，及颜色样式-->
+                <!--%style{[%t]}{Underline,FG_White},设置线程，及颜色样式-->
+                <!--%highlight{%-5level:}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=Bright Cyan, TRACE=Bright Blue},设置日志LEVEL，及颜色样式-->
+                <!--%style{%msg(%L)}{Default},设置方法名，及颜色样式-->
+                <!--%throwable，异常 相关-->
+                <pattern>%style{%d}{Underline,black} %style{[%t]}{Underline,FG_White} |
+                    %style{%c{1.}}{Underline,FG_Cyan} | %style{%M}{Underline,Black} | %highlight{%-5level:}{FATAL=red,
+                    ERROR=red, WARN=yellow, INFO=green, DEBUG=Bright Cyan, TRACE=Bright Blue} %style{%msg(%L)}{Default}
+                    %throwable %n
+                </pattern>
+            </PatternLayout>
+        </Console>
+
+
+
+        <!-- RollingFile Appender会将日志输出到fileName属性指定的文件中，且需要指定TriggeringPolicy和RolloverStrategy。其中
+                TriggeringPolicy决定是否生成新的日志文件，RolloverStrategy决定如何生成新的日志文件。如果没有配置RolloverStrategy，则会
+                使用DefaultRolloverStrategy。从2.5开始，可以在DefaultRolloverStrategy中配置一个自定义的删除动作。从2.8开始，如果没有指定
+                文件名，则会使用DirectWriteRolloverStrategy来代替DefaultRolloverStrategy -->
+        <!-- 这个RollingFile Appender会打印出所有的DEBUG及以下级别（DEBUG、INFO、ERROR、FATAL、OFF）的信息 -->
+
+        <!--
+          <RollingRandomAccessFile>节点用来定义超过指定大小自动删除旧的创建新的的Appender,按照一定的策略滚动文件,网上有使用2种标签<RollingFile> vs <RollingRandomAccessFile>,
+                  后者有缓冲区Buffer的概念，缓冲区满了后才会写入磁盘，所以可能看不到实时滚动更新的日志（但其性能更好）。要看到实时滚动更新的日志，则用RollingFIle
+            name：指定Appender的名字。
+            fileName：指定输出日志的目的文件带全路径的文件名。
+            filePattern：当发生滚动时，文件的转移和重命名规则，指定新建日志文件的名称格式。
+          <ThresholdFilter>决定日志事件能否被输出
+            ACCEPT(接受)、DENY(拒绝)、NEUTRAL(中立)、onMatch（该级别及以上）表示匹配设定的日志级别后是DENY还是ACCEPT、onMismatch（该级别以下）表示不匹配设定的日志级别是DENY还是ACCEPT还是NEUTRAL
+          <PatternLayout>日志输出格式，不设置默认为:%m%n。
+          <Policies>指定滚动日志的策略，就是什么时候进行新建日志文件输出日志。
+            TimeBasedTriggeringPolicy：Policies子节点，基于时间的滚动策略，interval属性用来指定多久滚动一次，默认是1 hour。modulate=true用来调整时间：比如现在是早上3am，interval是4，那么第一次滚动是在4am，接着是8am，12am…而不是7am。
+            SizeBasedTriggeringPolicy：Policies子节点，基于指定文件大小的滚动策略，size属性用来定义每个日志文件的大小。
+          <DefaultRolloverStrategy>默认滚动策略,用来指定同一个文件夹下最多有几个日志文件，默认为最多同一文件夹下7个文件，超出时开始删除最旧的，创建新的(通过max属性)。
+    -->
+        <!--INFO日志收集-->
+        <RollingFile name="infoLog" fileName="${logFilePath}/${logFileName}-infoLog.log"
+                     filePattern="${backupPath}/info/${logFileName}-infoLog-${backupHZ}-%i.log">
+            <!--日志文件中的日志格式-->
+            <PatternLayout pattern="${logFormat}"/>
+            <!--debug以上级别			-->
+            <ThresholdFilter level="debug" onMatch="ACCEPT" />
+
+            <!-- Policies表示一个CompositeTriggeringPolicy，可以组合多个TriggeringPolicy，只要内部的任意一个TriggeringPolicy
+            满足触发条件，都会滚动日志 -->
+            <Policies>
+                <!--根据时间备份,interval表示间隔时间, 需结合${backupPath}中的时间,当前精确到分钟,所以就是按1分钟间隔. 可单独使用-->
+
+                <!-- TimeBasedTriggeringPolicy用于按时间滚动日志。只要filePattern属性值中的日期/时间模式（pattern）不再应用于当
+                前文件时就进行日志滚动。这种规则通过interval和modulate属性来配置。interval属性指定一个整数，用于基于日期/时间模式中
+                的最小的时间单位数滚动一次。例如，filePattern值为/app_data/logs/my_app/$${date:yyyy_MM_dd}/my_app_%d{yyyy_
+                MM_dd_HH}_%i.log，这里使用小时作为最小的时间单位时，假如interval参数值为4，则表示每4小时滚动一次。默认值为1。
+                modulate表示是否调整interval属性值以便下次滚动发生在interval边界处。如果时间最小单位为小时，当前时间为早上3点，间隔
+                为4小时，则第一次滚动将发生在早上4点时（而不是早上7点），后续滚动将发生在早上8点、中午12点、下午4点等时刻 -->
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <!--根据日志文件大小配置,size为当前日志文件大小.可单独使用-->
+                <!-- SizeBasedTriggeringPolicy用于按文件大小滚动日志。每当日志文件超过size指定的大小（一般不超过几十MB，否则使用软
+                件打开导出的日志时很不方便），则这size大小的日志会自动存入按filePattern属性指定建立的文件夹下面并进行压缩存档 -->
+                <SizeBasedTriggeringPolicy size="${max_single_file_size}"/>
+            </Policies>
+
+            <!--            <DefaultRolloverStrategy max="15">-->
+            <!--设置日志定时删除-->
+            <!-- DefaultRolloverStrategy可以同时接受RollingFileAppender中filePattern属性值中日期/时间和整数计数器（%i）的
+            pattern，当日期/时间满足条件时，则会使用当前的日期/时间生成新的日志文件，如果filePattern属性值中含有一个整数计数器%i，则
+            在每次滚动时该整数都会增加，如果filePattern属性值中同时包含了日期/时间和整数计数器（%i），计数器会在日期/时间不变时而满足
+            其他滚动触发条件时（文件大小）开始自增，直到日期/时间发生变化时，计数器会重新自增。以.gz、.zip、.bz2、deflate、pack200
+            或xz结尾的filePattern值，会在日志文件归档时以后缀对应的格式进行压缩。min属性指定计数器的最小值，默认为1。max属性指定计数
+            器的最大值，一旦计数器达到了最大值，最早的归档将会在每次滚动时被删除，默认值为7。fileIndex属性如果设置为max（默认），则具
+            有更大索引的文件比具有更小索引的文件内容更新，如果设置为min，文件将重命名且计数器将遵循Fixed Window策略，这两种情况均有可
+            能导致批量的文件重命名，自2.8版本开始，如果fileIndex属性设置为nomax，则min和max属性值都将会被忽略，文件编号将每次递增1，
+            每次滚动都会递增到更大的值，且没有最大文件编号的限制 -->
+            <DefaultRolloverStrategy>
+                <!--扫描的日志文件路径,maxDepth为文件层级-->
+
+                <!-- Log4j 2.5引入了删除动作（Delete元素）。在滚动删除旧的日志文件时，相比使用DefaultRolloverStrategy的max属
+                性，该功能可以让用户拥有更多的删除控制。删除动作可以让用户配置若干个条件来删除相对于基准目录的文件。该功能可以删除非日
+                志文件，使用时一定要小心。可以通过testMode属性来测试配置是否会错删文件。basePath属性值用于指定删除文件的基准目录，必
+                须显式指定。maxDepth属性指定扫描目录的最大层级，0表示仅能访问基准目录（安全限制不能访问的情况除外），
+                Integer.MAX_VALUE值表示可以访问所有层级。默认值为1，表示仅扫描基准目录下的文件。testMode属性值如果设置为true，文件
+                不会实际删除，而是在status logger打印一条INFO级别的消息，可以使用该功能来测试是否会错删目标文件，默认为false。-->
+
+                <!-- 这里的Delete元素配置了每次滚动都会删除基准目录下匹配“*/my_app_debug_*.log.gz”日志文件，只要9分钟以前的日志文
+                件总大小超过2MB，或9分钟以前的日志文件文件总数超过2个就按时间顺序删除较早的日志文件。该元素可以防止日志文件所在分区的
+                磁盘空间被占满。特别需要注意的是，只有在发生日志滚动时才会尝试进行删除，否则即使满足了删除条件，但如果没有新的滚动日志
+                生成的话也不会发生删除操作。 -->
+                <Delete basePath="${logFilePath}/" maxDepth="3">
+                    <!--默认规则,只能删除文件,不能删除文件夹,如果需要删除文件夹需 添加ScriptCondition节点，再添加Script子节点，这样删除什么完全由脚本决定 . 可参考官网 http://logging.apache.org/log4j/2.x/manual/appenders.html#ScriptCondition-->
+                    <IfFileName glob="*/info/${logFileName}-infoLog-*.log"/>
+                    <!--日志保存期限 age的单位：D、H、M、S，分别表示天、小时、分钟、秒-->
+                    <IfLastModified age="2D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+            <!--过滤器 只打印INFO日志-->
+            <Filters>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMisMatch="NEUTRAL"/>
+                <ThresholdFilter Level="INFO" onMatch="ACCEPT" onMisMatch="DENY"/>
+            </Filters>
+
+        </RollingFile>
+
+        <!--WARN日志收集-->
+        <RollingFile name="warnLog" fileName="${logFilePath}/${logFileName}-warnLog.log"
+                     filePattern="${backupPath}/warn/${logFileName}-warnLog-${backupHZ}-%i.log">
+
+            <PatternLayout pattern="${logFormat}"/>
+
+            <Policies>
+                <!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+                <SizeBasedTriggeringPolicy size="1MB"/>
+            </Policies>
+
+            <!--            <DefaultRolloverStrategy max="15">-->
+            <DefaultRolloverStrategy>
+                <!--                <Delete basePath="${backupPath}/warn/" maxDepth="1">-->
+                <Delete basePath="${logFilePath}/" maxDepth="3">
+                    <!--                    <IfFileName glob="${logFilePath}-info*.log.gz"/>-->
+                    <IfFileName glob="*/warn/${logFileName}-warnLog-*.log"/>
+                    <!--                    <IfLastModified age="60m" />-->
+                    <IfLastModified age="3D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+            <!--过滤器 只打印WARN日志-->
+            <!--            <ThresholdFilter level="warn" onMatch="ACCEPT" onMismatch="DENY"/>-->
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMisMatch="NEUTRAL"/>
+                <ThresholdFilter Level="WARN" onMatch="ACCEPT" onMisMatch="DENY"/>
+            </Filters>
+
+        </RollingFile>
+
+        <!--ERROR 日志收集-->
+        <RollingFile name="errorLog" fileName="${logFilePath}/${logFileName}-errorLog.log"
+                     filePattern="${backupPath}/error/${logFileName}-errorLog-${backupHZ}-%i.log">
+
+            <PatternLayout pattern="${logFormat}"/>
+
+            <Policies>
+                <!--                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>-->
+                <SizeBasedTriggeringPolicy size="2MB"/>
+            </Policies>
+
+
+            <DefaultRolloverStrategy>
+                <!--                <Delete basePath="${backupPath}/error/" maxDepth="1">-->
+                <Delete basePath="${logFilePath}/" maxDepth="3">
+                    <!--                    <IfFileName glob="${logFilePath}-info*.log.gz"/>-->
+                    <IfFileName glob="*/error/${logFileName}-errorLog-*.log"/>
+                    <!--                    <IfLastModified age="60m" />-->
+                    <IfLastModified age="3D"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+            <!--过滤器 只打印WARN日志-->
+            <ThresholdFilter Level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+
+        </RollingFile>
+
+        <RollingFile name="job-info-log" fileName="${logFilePath}/qlang-job-info.log" filePattern="${logFilePath}/${date:yyyy-MM}/$qlang-job-info-%d{yyyy-MM-dd}-%i.log">
+            <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch） -->
+            <Filters>
+                <ThresholdFilter level="ALL" onMatch="ACCEPT" onMismatch="DENY" />
+            </Filters>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss:SSS} %sw_ctx %p - %l - %m%n" />
+            <Policies>
+                <!-- 基于时间的触发策略。该策略主要是完成周期性的log文件封存工作 interval，integer型，指定两次封存动作之间的时间间隔;modulate，boolean型，说明是否对封存时间进行调制 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="50MB" />
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${filePath}" maxDepth="2">
+                    <IfFileName glob="*/*-info*.log"/>
+                    <IfLastModified age="15d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+    </Appenders>
+
+    <!--定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <Loggers>
+
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <!--Logger节点用来单独指定日志的形式，name为包路径,比如要为org.springframework包下所有日志指定为INFO级别等。 -->
+        <logger name="org.springframework" level="INFO"></logger>
+        <logger name="org.mybatis" level="INFO"></logger>
+
+        <!-- 当Logger在配置文件中声明时，就创建了一个LoggerConfig对象，两者一一对应，LoggerConfig包含一些Filter、这些
+        Filters用于过滤传递给任意Appender的LogEvent，它还包含一些Appender的引用。Logger本身执行无指向的动作，它仅含有一
+        个与LoggerConfig关联的名称（通过name属性指定），root Logger具有固定的默认名称，其他Logger需要指定各自的name属性
+        值。LoggerConfig会被分配一个日志级别，通过level属性来指定。内建的日志级别按优先级从高到底排序有：OFF > FATAL >
+        ERROR > WARN > INFO > DEBUG > TRACE > ALL，Log4j 2 也支持自定义的日志级别。
+        -->
+        <root level="info">
+            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="infoLog"/>
+            <AppenderRef ref="warnLog"/>
+            <AppenderRef ref="errorLog"/>
+            <!--            <AppenderRef ref="RollingTimeFile"/>-->
+        </root>
+
+<!--        <Logger name="com.qpaas.qlang.job" additivity="false" level="INFO">-->
+<!--            <appender-ref ref="job-info-log"/>-->
+<!--        </Logger>-->
+    </Loggers>
+</configuration>
