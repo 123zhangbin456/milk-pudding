@@ -1,0 +1,29 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: pudding-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: user_route
+          uri: lb://pudding-user
+          predicates:
+            - Path=/api/v1/users/**
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+    nacos:
+      discovery:
+        server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+      config:
+        server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NAMESPACE:}
+        group: ${NACOS_GROUP:DEFAULT_GROUP}
+        file-extension: yml
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
