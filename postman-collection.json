@@ -1,0 +1,420 @@
+{
+    "info": {
+        "name": "Pudding Gateway API Tests",
+        "description": "Gateway功能测试集合",
+        "version": "1.0.0",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Health Checks",
+            "item": [
+                {
+                    "name": "Root Health Check",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/",
+                            "host": ["{{gateway_url}}"],
+                            "path": [""]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response contains expected message', function () {",
+                                    "    pm.expect(pm.response.text()).to.include('pudding-gateway ok');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Actuator Health",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/actuator/health",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["actuator", "health"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Health status is UP', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.status).to.eql('UP');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Gateway Management",
+            "item": [
+                {
+                    "name": "Gateway Status",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/gateway/status",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["gateway", "status"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response has success structure', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.code).to.eql(200);",
+                                    "    pm.expect(responseJson.message).to.eql('成功');",
+                                    "    pm.expect(responseJson.data.service).to.eql('pudding-gateway');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Gateway Routes",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/gateway/routes",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["gateway", "routes"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Response contains routes array', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.code).to.eql(200);",
+                                    "    pm.expect(responseJson.data).to.be.an('array');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "JWT Token Management",
+            "item": [
+                {
+                    "name": "Generate Admin Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"userId\": \"admin-001\",\n    \"username\": \"admin\",\n    \"email\": \"admin@milkpudding.com\",\n    \"role\": \"admin\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/gateway/token/generate",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["gateway", "token", "generate"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Token generated successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.code).to.eql(200);",
+                                    "    pm.expect(responseJson.data.token).to.be.a('string');",
+                                    "    pm.expect(responseJson.data.type).to.eql('Bearer');",
+                                    "    ",
+                                    "    // Save token for other tests",
+                                    "    pm.globals.set('admin_token', responseJson.data.token);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Generate User Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"userId\": \"user-001\",\n    \"username\": \"testuser\",\n    \"email\": \"user@milkpudding.com\",\n    \"role\": \"user\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/gateway/token/generate",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["gateway", "token", "generate"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('User token generated successfully', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.code).to.eql(200);",
+                                    "    pm.expect(responseJson.data.token).to.be.a('string');",
+                                    "    ",
+                                    "    // Save token for other tests",
+                                    "    pm.globals.set('user_token', responseJson.data.token);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Validate Admin Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"token\": \"{{admin_token}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/gateway/token/validate",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["gateway", "token", "validate"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "pm.test('Token validation successful', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.code).to.eql(200);",
+                                    "    pm.expect(responseJson.data.username).to.eql('admin');",
+                                    "    pm.expect(responseJson.data.role).to.eql('admin');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Validate Invalid Token",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"token\": \"invalid.jwt.token\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/gateway/token/validate",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["gateway", "token", "validate"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 401 or 400', function () {",
+                                    "    pm.expect(pm.response.code).to.be.oneOf([400, 401]);",
+                                    "});",
+                                    "",
+                                    "pm.test('Error response structure', function () {",
+                                    "    const responseJson = pm.response.json();",
+                                    "    pm.expect(responseJson.code).to.be.oneOf([400, 401]);",
+                                    "    pm.expect(responseJson.message).to.be.a('string');",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Error Handling Tests",
+            "item": [
+                {
+                    "name": "404 Not Found",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/nonexistent/path",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["nonexistent", "path"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 404', function () {",
+                                    "    pm.response.to.have.status(404);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Invalid JSON Request",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{invalid json}"
+                        },
+                        "url": {
+                            "raw": "{{gateway_url}}/gateway/token/generate",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["gateway", "token", "generate"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Status code is 400', function () {",
+                                    "    pm.response.to.have.status(400);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Load Testing",
+            "item": [
+                {
+                    "name": "Concurrent Status Requests",
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "{{gateway_url}}/gateway/status",
+                            "host": ["{{gateway_url}}"],
+                            "path": ["gateway", "status"]
+                        }
+                    },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test('Response time is less than 500ms', function () {",
+                                    "    pm.expect(pm.response.responseTime).to.be.below(500);",
+                                    "});",
+                                    "",
+                                    "pm.test('Status code is 200', function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "gateway_url",
+            "value": "http://localhost:8080",
+            "type": "string"
+        }
+    ]
+}

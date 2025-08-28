@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3c34caa2-d14a-4813-a0a5-615d2065a86f" name="Changes" comment="新增 docker-compose.yml 文件">
-      <change beforePath="$PROJECT_DIR$/pudding-gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pudding-gateway/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pudding-gateway/src/main/java/com/milkpudding/gateway/PuddingGatewayApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/pudding-gateway/src/main/java/com/milkpudding/gateway/PuddingGatewayApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pudding-gateway/src/main/java/com/milkpudding/gateway/controller/IndexController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pudding-gateway/src/main/java/com/milkpudding/gateway/controller/IndexController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pudding-gateway/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/pudding-gateway/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pudding-user/src/main/java/com/milkpudding/user/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/pudding-user/src/main/java/com/milkpudding/user/controller/UserController.java" afterDir="false" />
-    </list>
+    <list default="true" id="3c34caa2-d14a-4813-a0a5-615d2065a86f" name="Changes" comment="新增 docker-compose.yml 文件" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -138,7 +132,7 @@
       <updated>1754657177779</updated>
       <workItem from="1754657178918" duration="16495000" />
       <workItem from="1756343842806" duration="2293000" />
-      <workItem from="1756347527295" duration="1330000" />
+      <workItem from="1756347527295" duration="4970000" />
     </task>
     <task id="LOCAL-00001" summary="新增 docker-compose.yml 文件">
       <option name="closed" value="true" />
