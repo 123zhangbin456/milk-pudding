@@ -1,30 +1,6 @@
-#spring:
-#  application:
-#    name: pudding-user
-#  cloud:
-#    nacos:
-#      config:
-#        server-addr: 127.0.0.1:8848  # 从环境变量获取 Nacos 服务地址，默认值127.0.0.1:8848
-#        namespace: a9637e2f-21cf-4679-bb67-dfbe1acf96c5  # 从环境变量获取命名空间
-#        group: DEFAULT_GROUP  # 从环境变量获取组名
-#        file-extension: yml  # 配置文件格式
-#        # 添加这些配置强制使用 HTTP
-#        refresh-enabled: false
-#      discovery:
-#        server-addr: 127.0.0.1:8848  # 从环境变量获取 Nacos 服务地址
-#        namespace: a9637e2f-21cf-4679-bb67-dfbe1acf96c5  # 从环境变量获取命名空间
-#        group: DEFAULT_GROUP  # 从环境变量获取配置组
-#        # 添加这些配置
-#        enabled: true
-#        register-enabled: true
-#logging:
-#  level:
-#    root: INFO
-#    com.alibaba.nacos: DEBUG
-#    com.alibaba.cloud.nacos: DEBUG
-#    com.netflix.discovery: DEBUG
-#  pattern:
-#    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
+server:
+  port: 8081
+
 spring:
   application:
     name: pudding-user
@@ -33,13 +9,35 @@ spring:
       - "optional:consul:"
   cloud:
     consul:
-      host: localhost
-      port: 8500
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
       discovery:
         service-name: ${spring.application.name}
         health-check-path: /actuator/health
         health-check-interval: 10s
+        instance-id: ${spring.application.name}:${server.port}
+        prefer-ip-address: true
+        tags: user,api
       config:
         enabled: true
         format: YAML
         data-key: data
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.milkpudding.user: DEBUG
+    org.springframework.cloud.consul: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{50}] - %msg%n'

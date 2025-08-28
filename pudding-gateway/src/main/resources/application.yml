@@ -1,18 +1,74 @@
+server:
+  port: 8080
+
 spring:
   application:
-    name: pudding-gateway  # 应用的服务名称，用于 Nacos 服务发现
+    name: pudding-gateway
   config:
     import:
       - "optional:consul:"
   cloud:
     consul:
-      host: localhost
-      port: 8500
+      host: ${CONSUL_HOST:localhost}
+      port: ${CONSUL_PORT:8500}
       discovery:
         service-name: ${spring.application.name}
         health-check-path: /actuator/health
         health-check-interval: 10s
+        instance-id: ${spring.application.name}:${server.port}
+        prefer-ip-address: true
+        tags: gateway,api
       config:
         enabled: true
         format: YAML
         data-key: data
+    gateway:
+      # 开启服务发现
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      # 全局过滤器配置
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      # HTTP客户端配置
+      httpclient:
+        pool:
+          max-idle-time: 55s
+          max-life-time: 10m
+        connect-timeout: 5000
+        response-timeout: 30s
+      # 全局CORS配置
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowedHeaders: "*"
+            allowCredentials: true
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: when_authorized
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.milkpudding.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.consul: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{50}] - %msg%n'
