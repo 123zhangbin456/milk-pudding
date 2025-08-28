@@ -22,22 +22,7 @@ spring:
         enabled: true
         format: YAML
         data-key: data
-
-# Actuator 配置
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: when_authorized
-
-# 日志配置
-logging:
-  level:
-    root: INFO
-    com.milkpudding.user: DEBUG
-    org.springframework.cloud.consul: DEBUG
-  pattern:
-    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{50}] - %msg%n'
+        # 指定配置前缀，如果不指定，默认使用应用名
+        prefix: config
+        default-context: application
+        profile-separator: ','

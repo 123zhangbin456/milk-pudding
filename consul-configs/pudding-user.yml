@@ -1,0 +1,47 @@
+# Consul中的pudding-user配置
+# 路径: config/pudding-user/data
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.milkpudding.user: DEBUG
+    org.springframework.cloud.consul: INFO
+    org.springframework.web: INFO
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{50}] - %msg%n'
+    file: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{50}] - %msg%n'
+
+# 业务配置
+app:
+  user:
+    default-avatar: "https://example.com/default-avatar.png"
+    password-strength: medium
+    session-timeout: 1800000 # 30分钟
+  validation:
+    username:
+      min-length: 3
+      max-length: 50
+    password:
+      min-length: 6
+      max-length: 128
+  notification:
+    email:
+      enabled: true
+      template: user-welcome
+    sms:
+      enabled: false

@@ -1,0 +1,77 @@
+# Consul中的pudding-gateway配置
+# 路径: config/pudding-gateway/data
+
+spring:
+  cloud:
+    gateway:
+      # 开启服务发现
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      # 全局过滤器配置
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      # HTTP客户端配置
+      httpclient:
+        pool:
+          max-idle-time: 55s
+          max-life-time: 10m
+        connect-timeout: 5000
+        response-timeout: 30s
+      # 全局CORS配置
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOriginPatterns: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+              - PATCH
+            allowedHeaders: "*"
+            allowCredentials: true
+      # 路由配置示例
+      routes:
+        - id: pudding-user
+          uri: lb://pudding-user
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - name: StripPrefix
+              args:
+                parts: 2
+
+# Actuator 配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway,routes,filters
+  endpoint:
+    health:
+      show-details: when_authorized
+    gateway:
+      enabled: true
+
+# 日志配置
+logging:
+  level:
+    root: INFO
+    com.milkpudding.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.consul: INFO
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%logger{50}] - %msg%n'
+
+# 业务配置
+app:
+  jwt:
+    secret: your-secret-key-here
+    expiration: 86400000 # 24小时
+  rate-limit:
+    default-capacity: 100
+    default-refill-rate: 10
+    default-refill-period: 60
