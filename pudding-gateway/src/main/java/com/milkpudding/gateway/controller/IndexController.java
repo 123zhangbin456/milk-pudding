@@ -6,8 +6,8 @@ import reactor.core.publisher.Mono;
 
 @RestController
 public class IndexController {
-    @GetMapping("/")
-    public Mono<String> index() {
+    @GetMapping("/health")
+    public Mono<String> health() {
         return Mono.just("pudding-gateway ok");
     }
 }

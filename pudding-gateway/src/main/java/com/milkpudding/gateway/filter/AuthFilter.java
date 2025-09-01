@@ -29,7 +29,13 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
         "/",
         "/actuator/health",
         "/api/v1/auth/login",
-        "/api/v1/auth/register"
+        "/api/v1/auth/register",
+        "/login.html",
+        "/register.html",
+        "/styles.css",
+        "/script.js",
+        "/gateway/status",
+        "/gateway/routes"
     );
     
     public AuthFilter() {
