@@ -16,6 +16,37 @@ external:
     jsonplaceholder:
       url: https://jsonplaceholder.typicode.com
 
+# Retrofit 全局配置
+retrofit:
+  # 全局日志打印配置
+  global-log:
+    enable: true
+    log-level: info
+    log-strategy: basic
+    aggregate: true
+
+  # 全局重试配置
+  global-retry:
+    enable: false  # 使用声明式重试
+    interval-ms: 100
+    max-retries: 2
+    retry-rules:
+      - response_status_not_2xx
+      - occur_io_exception
+
+  # 全局超时时间配置
+  global-timeout:
+    read-timeout-ms: 10000
+    write-timeout-ms: 10000
+    connect-timeout-ms: 5000
+    call-timeout-ms: 0
+
+  # 熔断降级配置
+  degrade:
+    degrade-type: resilience4j
+    global-resilience4j-degrade:
+      enable: false  # 使用现有的 Resilience4j 配置
+
 # Resilience4j配置
 resilience4j:
   circuitbreaker:
